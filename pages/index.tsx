@@ -1,40 +1,28 @@
-import Link from 'next/link';
 import React from 'react';
 import { GetStaticProps } from 'next';
 import { Content } from '../types/content';
-import Layout, { siteTitle } from '../components/Layout';
-import utilStyles from '../styles/utils.module.css';
-import Head from 'next/head';
+import Layout from '../components/Layout';
 import { List } from '../types/response/blog/list';
-import Date from '../components/Date';
-import { Grid } from '@material-ui/core';
-import { Today } from '@material-ui/icons';
+import Article from '../components/Article';
+import Pager from '../components/Pager';
+import Head from 'next/head';
 
 type Props = {
   contents: Array<Content>;
 };
 
 const Home: React.FC<Props> = ({ contents }: Props) => {
+  const latestContent: Content = contents[0];
+  const nextContent: Content = contents[1];
+  const topPageCurrent = 0;
+
   return (
-    <Layout home>
+    <Layout>
       <Head>
-        <title>{siteTitle}</title>
+        <title>{latestContent.title}</title>
       </Head>
-      <div>
-        {contents.map((content: Content) => (
-          <React.Fragment key={content.id}>
-            <Grid container className={utilStyles.lightText} alignContent="center">
-              <Today></Today>
-              <Date dateString={content.publishedAt} />
-            </Grid>
-            <Link href="/blogs/[id]" as={`blogs/${content.id}`}>
-              <a>
-                <h2>{content.title}</h2>
-              </a>
-            </Link>
-          </React.Fragment>
-        ))}
-      </div>
+      <Article content={latestContent} />
+      <Pager nextContent={nextContent} current={topPageCurrent} />
     </Layout>
   );
 };
@@ -46,7 +34,7 @@ export const getStaticProps: GetStaticProps = async () => {
       'X-API-KEY': key,
     },
   };
-  const url = `${process.env.ENDPOINT}/blog`;
+  const url = `${process.env.ENDPOINT}/blog?limit=2`;
   const res = await fetch(url, headers);
   const data: List = await res.json();
 

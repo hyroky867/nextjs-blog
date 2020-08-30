@@ -48,7 +48,6 @@ export const getStaticProps = async (context: {
 }) => {
   const id = context.params.id;
   const key: string = process.env.API_KEY as string;
-
   const header = {
     headers: {
       'X-API-KEY': key,
